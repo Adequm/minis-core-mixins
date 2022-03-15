@@ -5,6 +5,15 @@ import translateMixin from './mixins/translate.mixin.js';
 
 import vuexMinisModule from './store/minis.module.js';
 
+const persistedMinis = [
+  'minis.minisThemeMain', 
+  'minis.minisThemeSpecial', 
+  'minis.minisLang',
+  'minis.themesJSON', 
+  'minis.translateJSON', 
+  'minis.minisJSON',
+];
+
 export {
  faviconMixin,
  minisMixin,
@@ -13,12 +22,3 @@ export {
  vuexMinisModule,
  persistedMinis
 };
-
-export const persistedMinis = [
-  'minis.minisThemeMain', 
-  'minis.minisThemeSpecial', 
-  'minis.minisLang',
-  'minis.themesJSON', 
-  'minis.translateJSON', 
-  'minis.minisJSON',
-];
