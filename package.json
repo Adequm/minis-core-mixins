@@ -1,0 +1,19 @@
+{
+  "name": "minis-core-mixins",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adequm/minis-core-mixins.git"
+  },
+  "author": "Adequm <adequm@bk.ru>",
+  "license": "ISC",
+  "homepage": "https://adequm.github.io/minis/",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "vue": "^3.2.31",
+    "vuex": "^4.0.2"
+  }
+}
