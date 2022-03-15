@@ -11,4 +11,14 @@ export {
  resizeMixin,
  translateMixin,
  vuexMinisModule,
+ persistedMinis
 };
+
+export const persistedMinis = [
+  'minis.minisThemeMain', 
+  'minis.minisThemeSpecial', 
+  'minis.minisLang',
+  'minis.themesJSON', 
+  'minis.translateJSON', 
+  'minis.minisJSON',
+];
