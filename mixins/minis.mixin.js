@@ -11,7 +11,7 @@ export default {
       deep: true,
       immediate: true,
       handler(translateOfMinis) {
-        if(!Object.values(translateOfMinis).length) return;
+        if(!_.size(translateOfMinis)) return;
         document.title = this.translate('title');
       }
     },
@@ -54,7 +54,7 @@ export default {
 
     themeMainInit() {
       if(!this.themeMain) return this.switchTheme('main');
-      Object.entries(this.themeMain.colors).forEach(([key, color]) => {
+      _.entries(this.themeMain.colors).forEach(([key, color]) => {
         document.body.style.setProperty(`--${ key }`, color);
       });
     },
@@ -62,10 +62,13 @@ export default {
     themeSpecialInit() {
       if(!this.themeSpecial) return this.switchTheme('special');
       document.body.style.setProperty(`--special-color`, this.themeSpecial.normal);
+      _.each(this.themeSpecial, (color, value) => {
+        document.body.style.setProperty(`--special-color-${value}`, color);
+      });
     },
 
     themesJSONInit() {
-      Object.entries(this.themesJSON.default || []).forEach(([key, color]) => {
+      _.entries(this.themesJSON.default || []).forEach(([key, color]) => {
         document.body.style.setProperty(`--${ key }-color`, color);
       });
     },
