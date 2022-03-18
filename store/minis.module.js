@@ -7,6 +7,7 @@ store.state = () => ({
   minisLang: 'ru',
   minisThemeMain: null,
   minisThemeSpecial: null,
+  minisHints: true,
   translateJSON: {},
   themesJSON: {},
   minisJSON: {},
@@ -45,6 +46,7 @@ store.mutations = {
     const newLangIndex = (langIndex + 1) % langsList.length;
     Vue.set(state, 'minisLang', langsList[newLangIndex]);
   },
+  switchHints: state => Vue.set(state, 'minisHints', !state.minisHints),
   initMinis(state, { translateJSON, minisJSON, themesJSON }) {
     Vue.set(state, 'minisJSON', minisJSON);
     Vue.set(state, 'translateJSON', translateJSON);

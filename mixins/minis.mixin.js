@@ -37,6 +37,7 @@ export default {
     ]),
     ...mapState({ 
       minisTheme: state => state.minis.minisTheme,
+      minisHints: state => state.minis.minisHints,
       minisLang: state => state.minis.minisLang,
 
       themesJSON: state => state.minis.themesJSON,
@@ -48,6 +49,7 @@ export default {
   methods: {
     ...mapMutations({ 
       switchTheme: (commit, args) => commit('switchTheme', args),
+      switchHints: (commit, args) => commit('switchHints', args), 
       switchLang: (commit, args) => commit('switchLang', args),
       initMinis: (commit, args) => commit('initMinis', args),
     }),
