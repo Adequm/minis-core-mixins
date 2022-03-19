@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 export default {
   data: () => ({
@@ -25,7 +25,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isFullscreen']),
+    ...mapState(['isFullscreen']),
     isWidthMore768: ths => ths.innerWidth >= 768,
     isDesktop: ths => ths.isWidthMore768 && !ths.isFullscreen,
     appWidth: ths => ths.isDesktop ? ths.containerWidth : ths.innerWidth,
