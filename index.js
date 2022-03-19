@@ -9,6 +9,7 @@ const persistedMinis = [
   'minis.minisThemeMain', 
   'minis.minisThemeSpecial', 
   'minis.minisLang',
+  'minis.minisHints',
   'minis.themesJSON', 
   'minis.translateJSON', 
   'minis.minisJSON',
