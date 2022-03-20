@@ -66,12 +66,13 @@ export default {
 
     themeSpecialInit() {
       if(!this.themeSpecial) return this.switchTheme('special');
-      const shift = +_.get(this.themeMain, 'shift', 0);
+      const shift = parseInt(_.get(this.themeMain, 'shift', 0));
       document.body.style.setProperty(`--special-color`, this.themeSpecial.normal);
       _.each(this.themeSpecial, (color, value) => {
         const shiftValue = Math.abs(shift - value);
-        document.body.style.setProperty(`--special-color-${shiftValue}`, color);
         document.body.style.setProperty(`--special-color-${value}-inline`, color);
+        if(_.isNaN(shiftValue)) return;
+        document.body.style.setProperty(`--special-color-${shiftValue}`, color);
       });
     },
 
