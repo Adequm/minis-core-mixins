@@ -8,6 +8,10 @@ export default {
     links: [],
   }),
 
+  watch: {
+    isFullscreen: 'initFramesSettingsWatcher',
+  },
+
   computed: {
     domen() {
       return process.env.NODE_ENV === 'development' && location.pathname.startsWith('/minis/')
