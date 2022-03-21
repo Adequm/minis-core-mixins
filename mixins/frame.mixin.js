@@ -5,7 +5,7 @@ export default {
     appIndex: 0,
     framePageIndex: 0,
     isFullscreenInFrame: false,
-    links: ['self'],
+    links: [],
   }),
 
   computed: {
@@ -55,6 +55,10 @@ export default {
       }
       this.initFramesSettingsWatcher();
     },
+  },
+
+  created() {
+    this.links.push(this.projectKey);
   },
 
   beforeMount() {
