@@ -27,7 +27,8 @@ export default {
   computed: {
     ...mapState(['isFullscreen']),
     isWidthMore768: ths => ths.innerWidth >= 768,
-    isDesktop: ths => ths.isWidthMore768 && !ths.isFullscreen,
+    isFrame: () => window.self !== window.top,
+    isDesktop: ths => ths.isWidthMore768 && !ths.isFullscreen && !ths.isFrame,
     appWidth: ths => ths.isDesktop ? ths.containerWidth : ths.innerWidth,
     appHeight: ths => ths.isDesktop ? ths.containerHeight : ths.innerHeight,
     maxContainerWidth: ths => ths.innerWidth - 180,
