@@ -9,7 +9,8 @@ export default {
   }),
 
   watch: {
-    isFullscreen: 'initFramesSettingsWatcher',
+    isFullscreen: 'initFramesWatchers',
+    isWidthMore768: 'initFramesWatchers',
   },
 
   computed: {
@@ -21,28 +22,36 @@ export default {
   },
 
   methods: {
-    getSettingsButton(index = 0, amount = 0) {
+     getFrameElementById(index = 0, elementId, amount = 0) {
       return new Promise(async resolve => {
         try {
           const body = window.frames[index].document.body;
-          const settingsButton = body.querySelector(`#settingsButton`);
-          if(!settingsButton) throw settingsButton;
-          resolve(settingsButton);
+          const element = body.querySelector(elementId);
+          if(!element) throw element;
+          resolve(element);
         } catch(err) {
-          if(amount >= 50 || (!this.isFullscreen && this.isWidthMore768)) return resolve(null);
-          await new Promise(resolve => setTimeout(resolve, 200));
-          resolve(this.getSettingsButton(index, ++amount));
+          if(amount >= 200) return resolve(null);
+          await new Promise(resolve => setTimeout(resolve, 50));
+          resolve(this.getFrameElementById(index, elementId, ++amount));
         }
       })
     },
-    initFramesSettingsWatcher() {
+    initFramesWatchers() {
       _.each(this.links, (link, index) => {
+        this.initFrameCheckboxFullscreenWatcher(index);
         this.initFrameSettingsWatcher(index);
       })
     },
+    async initFrameCheckboxFullscreenWatcher(index) {
+      const checkboxFullscreen = await this.getFrameElementById(index, '#checkboxFullscreen');
+      const value = this.isFullscreen || !this.isWidthMore768;
+      const valueEl = checkboxFullscreen.checked;
+      if(value == valueEl) return; 
+      _.invoke(checkboxFullscreen, 'click');
+    },
     async initFrameSettingsWatcher(index) {
       if(!this.isFullscreen && this.isWidthMore768) return;
-      const settingsButton = await this.getSettingsButton(index);
+      const settingsButton = await this.getFrameElementById(index, `#settingsButton`);
       _.invoke(settingsButton, 'setAttribute', 'loading', 'done');
       _.invoke(settingsButton, 'addEventListener', 'click', () => {
         this.openedModalName = 'settings';
@@ -57,7 +66,7 @@ export default {
       } else {
         this.framePageIndex = (this.framePageIndex + 1) % length;
       }
-      this.initFramesSettingsWatcher();
+      this.initFramesWatchers();
     },
   },
 
@@ -66,7 +75,6 @@ export default {
   },
 
   beforeMount() {
-    this.initFramesSettingsWatcher();
     const locationsGet = _.chain(location.href)
       .split('?')
       .last()
@@ -76,5 +84,9 @@ export default {
       .value();
     this.isFullscreenInFrame = locationsGet.isFullscreen === 'true';
     this.appIndex = parseInt(locationsGet.index) || 0;
+  },
+
+  mounted() {
+    this.initFramesWatchers();
   },
 };
