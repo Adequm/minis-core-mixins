@@ -37,7 +37,6 @@ export default {
       })
     },
     initFramesWatchers() {
-      if(!this.isFrame) return;
       _.each(this.links, (link, index) => {
         this.initFrameCheckboxFullscreenWatcher(index);
         this.initFrameSettingsWatcher(index);
@@ -46,7 +45,7 @@ export default {
     async initFrameCheckboxFullscreenWatcher(index) {
       const checkboxFullscreen = await this.getFrameElementById(index, '#checkboxFullscreen');
       const value = this.isFullscreen || !this.isWidthMore768;
-      const valueEl = checkboxFullscreen.checked;
+      const valueEl = _.get(checkboxFullscreen, 'checked');
       if(value == valueEl) return; 
       _.invoke(checkboxFullscreen, 'click');
     },
