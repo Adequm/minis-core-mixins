@@ -29,7 +29,7 @@ export default {
           if(!settingsButton) throw settingsButton;
           resolve(settingsButton);
         } catch(err) {
-          if(amount >= 50 || !this.isFullscreen) return resolve(null);
+          if(amount >= 50 || (!this.isFullscreen && this.isWidthMore768)) return resolve(null);
           await new Promise(resolve => setTimeout(resolve, 200));
           resolve(this.getSettingsButton(index, ++amount));
         }
@@ -41,7 +41,7 @@ export default {
       })
     },
     async initFrameSettingsWatcher(index) {
-      if(!this.isFullscreen) return;
+      if(!this.isFullscreen && this.isWidthMore768) return;
       const settingsButton = await this.getSettingsButton(index);
       _.invoke(settingsButton, 'setAttribute', 'loading', 'done');
       _.invoke(settingsButton, 'addEventListener', 'click', () => {
