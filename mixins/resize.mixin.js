@@ -31,12 +31,12 @@ export default {
     isDesktop: ths => ths.isWidthMore768 && !ths.isFullscreen && !ths.isFrame,
     appWidth: ths => ths.isDesktop ? ths.containerWidth : ths.innerWidth,
     appHeight: ths => ths.isDesktop ? ths.containerHeight : ths.innerHeight,
-    maxContainerWidth: ths => ths.innerWidth - 180,
-    maxContainerHeight: ths => ths.innerHeight - 100,
     isMinContainerWidth: ths => ths.containerWidth === ths.minContainerWidth,
     isMaxContainerWidth: ths => ths.containerWidth === ths.maxContainerWidth,
     isMinContainerHeight: ths => ths.containerHeight === ths.minContainerHeight,
     isMaxContainerHeight: ths => ths.containerHeight === ths.maxContainerHeight,
+    maxContainerHeight: ths => ths.innerHeight - 100,
+    maxContainerWidth: ths => (ths.innerWidth - 180 - (ths.links.length - 1) * 20) / ths.links.length,
   },
 
   methods: {
