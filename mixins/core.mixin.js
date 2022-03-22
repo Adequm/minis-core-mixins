@@ -19,6 +19,10 @@ export default {
     ...mapState(['switchFullscreenKey']),
     isShowMinisButton: ths => ths.isDesktop && !ths.isFrame && !ths.isFullscreenInFrame,
     isShowSettingsButton: ths => (ths.isFullscreenInFrame && ths.isFrame) || (!ths.isDesktop && !ths.isFrame),
+    minisWrapperMaxWidth() {
+      const { isFullscreen, isWidthMore768, isFullscreenInFrame, appWidth, containerWidth } = this;
+      return isFullscreen || !isWidthMore768 || isFullscreenInFrame ? appWidth : containerWidth;
+    },
   },
 
 	methods: {
