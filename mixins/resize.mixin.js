@@ -92,6 +92,7 @@ export default {
 
   beforeMount() {
     const updateInnerSize = () => {
+      if(!document.body.offsetWidth) return;
       this.innerWidth = document.body.offsetWidth;
       if(this.onInputFocus) return;
       this.innerHeight = innerHeight;
