@@ -15,7 +15,7 @@ export default {
   computed: {
     domen() {
       return process.env.NODE_ENV === 'development' && location.pathname.startsWith('/minis/')
-        ? `${ location.origin }/minis#`
+        ? `${ location.origin }/minis/`
         : 'https://adequm.github.io/minis-';
     },
   },
