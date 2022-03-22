@@ -37,6 +37,7 @@ export default {
       })
     },
     initFramesWatchers() {
+      if(!this.isFrame) return;
       _.each(this.links, (link, index) => {
         this.initFrameCheckboxFullscreenWatcher(index);
         this.initFrameSettingsWatcher(index);
