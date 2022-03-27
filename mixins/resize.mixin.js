@@ -7,6 +7,7 @@ export default {
   data: () => ({
     minContainerWidth: 300,
     minContainerHeight: 560,
+    lastDiffAtStart: {},
     containerWidth: {},
     containerHeight: null,
     innerHeight: null,
@@ -20,7 +21,6 @@ export default {
     containerWidthSum: 0,
     isAutoResize: false,
     isColResize: false,
-    resizeIndexShift: null,
   }),
 
   watch: {
@@ -49,9 +49,7 @@ export default {
 
   methods: {
     resizeContainers(sizes = {}) {
-      _.times(this.links.length, index => {
-        this.resizeContainer(sizes, index);
-      });
+      _.times(this.links.length, index => this.resizeContainer(sizes, index));
       if(this.isAutoResize) this.autoResize();
     },
 
@@ -79,8 +77,8 @@ export default {
 
       if(!this.isDesktop) return;
       const wrapper = document.getElementById(`minis__wrapper_${index}`);
-      _.set(wrapper, 'style.width', `${this.containerWidth[index]}px`);
-      _.invoke(wrapper, 'setAttribute', 'area-size', this.containerWidth[index])
+      _.set(wrapper, 'style.width', `${newContainerWidth}px`);
+      _.invoke(wrapper, 'setAttribute', 'area-size', newContainerWidth);
     },
 
     setContainerSize({ pageX, pageY }) {
@@ -93,11 +91,13 @@ export default {
         if(_.isNull(this.startResizeHeight)) return;
         if(_.isNull(this.startResizeY)) return;
 
+        const diffAtStart = pageX - startResizeX;
         if(this.isColResize) {
-          this.setContainerSizeOnCol({ diffAtStart: pageX - startResizeX, startResizeWidth });
+          this.setContainerSizeOnCol(diffAtStart - this.lastDiffAtStart[this.resizeIndex]);
+          this.lastDiffAtStart[this.resizeIndex] = diffAtStart;
         } else {
           let containerHeight = (pageY - this.startResizeY) * 2 + this.startResizeHeight;
-          let containerWidth = (pageX - startResizeX) * 2 + startResizeWidth;
+          let containerWidth = diffAtStart * 2 + startResizeWidth;
           if(containerWidth <= -this.minContainerWidth) containerWidth *= -1;
           if(containerHeight <= -this.minContainerHeight) containerHeight *= -1;
           this.resizeContainer({ containerWidth, containerHeight }, this.resizeIndex);
@@ -105,96 +105,52 @@ export default {
       })
     },
 
-    setContainerSizeOnCol({ diffAtStart, startResizeWidth }) {
-      let currentContainerWidth = this.containerWidth[this.resizeIndex];
-      let diffX = diffAtStart + startResizeWidth - currentContainerWidth;
-      // if(!diffX) return;
+    setContainerSizeOnCol(diffX) {
+      const maxWidth = _.sum(_.values(this.startResizeWidth)) - (this.links.length-1) * this.minContainerWidth;
 
-      let index = 0;
-      let neighboursShift = 0;
-      if(diffX >= 0 && false) {
+      if(diffX > 0) {
         let nextContainerIndex = this.resizeIndex - 1;
+        const currentContainerWidth = this.containerWidth[this.resizeIndex];
+
         while(this.containerWidth[nextContainerIndex]) {
-          const nextStartResizeWidth = this.startResizeWidth[nextContainerIndex];
-          if(this.containerWidth[nextContainerIndex] > this.minContainerWidth) {
-            const newNextContainerWidth = nextStartResizeWidth - diffAtStart + neighboursShift;
+          const nextContainerWidth = this.containerWidth[nextContainerIndex];
+
+          if(nextContainerWidth > this.minContainerWidth) {
+            const newNextContainerWidth = nextContainerWidth - diffX;
+            const newContainerWidth = _.clamp(currentContainerWidth + diffX, this.minContainerWidth, maxWidth);
             this.resizeContainer({ containerWidth: newNextContainerWidth }, nextContainerIndex);
-            this.resizeContainer({ containerWidth: currentContainerWidth + diffAtStart }, this.resizeIndex);
+            this.resizeContainer({ containerWidth: newContainerWidth }, this.resizeIndex);
             break;
           }
-          index++;
-          neighboursShift += nextStartResizeWidth - this.minContainerWidth;
           nextContainerIndex--;
         }
       }
-      if(diffX <= 0) {
-        this.resizeIndexShift = this.resizeIndex;
-        // startResizeWidth = this.startResizeWidth[this.resizeIndex - 1];
-        currentContainerWidth = this.containerWidth[this.resizeIndex - 1];
 
-        while(this.containerWidth[this.resizeIndexShift]) {
- 
-          const nextStartResizeWidth = this.startResizeWidth[this.resizeIndexShift];
-          const nextContainerWidth = this.containerWidth[this.resizeIndexShift];
+      if(diffX < 0) {
+        let nextContainerIndex = this.resizeIndex;
+        const currentContainerWidth = this.containerWidth[this.resizeIndex - 1];
+
+        while(this.containerWidth[nextContainerIndex]) {
+          const nextContainerWidth = this.containerWidth[nextContainerIndex];
 
           if(nextContainerWidth > this.minContainerWidth) {
-            
-
-            if(nextContainerWidth + diffX <= this.minContainerWidth) {
-              diffAtStart -= this.minContainerWidth - nextContainerWidth + diffX;
+            if(nextContainerWidth + diffX < this.minContainerWidth) {
+              diffX += this.minContainerWidth - nextContainerWidth - diffX;
             }
 
-            setTimeout(console.log.bind(console, diffAtStart))
-
-            const newContainerWidth = currentContainerWidth - diffAtStart - neighboursShift;
+            const newMaxContainerWidth = currentContainerWidth - diffX;
+            const newContainerWidth = _.clamp(newMaxContainerWidth, this.minContainerWidth, maxWidth);
+            this.resizeContainer({ containerWidth: nextContainerWidth + diffX }, nextContainerIndex);
             this.resizeContainer({ containerWidth: newContainerWidth }, this.resizeIndex - 1);
-            this.resizeContainer({ containerWidth: nextContainerWidth + diffAtStart }, this.resizeIndexShift);
             break;
           }
 
-          index++;
-          neighboursShift += nextStartResizeWidth - this.minContainerWidth;
-          this.resizeIndexShift++;
-        //   newContainerWidth = diffX + startResizeWidth;
-        //   containerWidthDifference = newContainerWidth - currentContainerWidth;
-
-
-        //   const nextContainerWidth = this.containerWidth[nextContainerIndex];
-        //   if(nextContainerWidth > this.minContainerWidth) {
-        //     const newNextContainerWidth = nextContainerWidth + diffX;
-        //     this.resizeContainer({ containerWidth: newNextContainerWidth }, nextContainerIndex);
-        //     this.resizeContainer({ containerWidth: newContainerWidth }, this.resizeIndex - 1);
-        //     break;
-        //   }
-
+          nextContainerIndex++;
         }
-
-        // while(this.containerWidth[nextContainerIndex]) {
-        //   // const currentContainerWidthDifference = 
-        //   const nextContainerWidth = this.containerWidth[nextContainerIndex];
-        //   let newNextContainerWidth = nextContainerWidth + containerWidthDifference;
-
-        //   const shift = newNextContainerWidth - this.minContainerWidth;
-        //   if(shift <= 5 && shift > 0) {
-        //     newNextContainerWidth -= shift;
-        //     containerWidthDifference -= shift;
-        //   }
-
-        //   this.resizeContainer({ containerWidth: newNextContainerWidth }, nextContainerIndex);
-
-        //   if(newNextContainerWidth > this.minContainerWidth) {
-        //     const abc = this.containerWidth[this.resizeIndex - 1];
-        //     this.resizeContainer({ containerWidth: abc - containerWidthDifference }, this.resizeIndex - 1); 
-        //   }
-        //     break;
-
-        //   nextContainerIndex++;
-        // }
       }
     },
 
     startResize(event, index, isColResize) {
-      this.resizeIndexShift = null;
       this.isColResize = isColResize;
       this.isAutoResize = false;
       this.resizeIndex = index;
@@ -202,6 +158,7 @@ export default {
       this.startResizeY = event.pageY;
       this.startResizeWidth = _.cloneDeep(this.containerWidth);
       this.startResizeHeight = this.containerHeight;
+      this.lastDiffAtStart[this.resizeIndex] = 0;
       this.setContainerSize(event);
       document.addEventListener('mousemove', this.setContainerSize);
       document.addEventListener('mouseup', this.stopResize);
@@ -211,7 +168,6 @@ export default {
     },
 
     stopResize() {
-      this.resizeIndexShift = null;
       this.isColResize = false;
       this.isAutoResize = false;
       this.resizeIndex = null;
@@ -219,6 +175,7 @@ export default {
       this.startResizeY = null;
       this.startResizeWidth = {};
       this.startResizeHeight = null;
+      this.lastDiffAtStart = {};
       document.removeEventListener('mousemove', this.setContainerSize);
       document.removeEventListener('mouseup', this.stopResize);
       window.removeEventListener('mouseleave', this.stopResize);
@@ -238,7 +195,14 @@ export default {
         : this.minContainerWidth;
       _.times(length, index => {
         this.resizeContainer({ containerWidth, containerHeight }, index);
-      })
+      });
+    },
+
+    autoResizeWidth() {
+      const length = _.size(this.containerWidth);
+      const sumWidths = _.sum(_.values(this.containerWidth));
+      const containerWidth = Math.floor(sumWidths / length);
+      _.times(length, index => this.resizeContainer({ containerWidth }, index));
     },
   },
 
